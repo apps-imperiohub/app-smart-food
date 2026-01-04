@@ -1,0 +1,50 @@
+[
+  {
+    "idCategory": "1",
+    "strCategory": "Beef",
+    "strCategoryThumb": "https://www.themealdb.com/images/category/beef.png",
+    "strCategoryDescription": "Beef is the culinary name for meat from cattle, particularly skeletal muscle. Humans have been eating beef since prehistoric times."
+  },
+  {
+    "idCategory": "2",
+    "strCategory": "Chicken",
+    "strCategoryThumb": "https://www.themealdb.com/images/category/chicken.png",
+    "strCategoryDescription": "Chicken is a type of domesticated fowl, a subspecies of the red junglefowl. It is one of the most common and widespread domestic animals."
+  },
+  {
+    "idCategory": "3",
+    "strCategory": "Dessert",
+    "strCategoryThumb": "https://www.themealdb.com/images/category/dessert.png",
+    "strCategoryDescription": "Dessert is a course that concludes a meal. The course usually consists of sweet foods, such as confections dishes or fruit."
+  },
+  {
+    "idCategory": "4",
+    "strCategory": "Pasta",
+    "strCategoryThumb": "https://www.themealdb.com/images/category/pasta.png",
+    "strCategoryDescription": "Pasta is a staple food of traditional Italian cuisine, with the first reference dating to 1154 in Sicily."
+  },
+  {
+    "idCategory": "5",
+    "strCategory": "Seafood",
+    "strCategoryThumb": "https://www.themealdb.com/images/category/seafood.png",
+    "strCategoryDescription": "Seafood is any form of sea life regarded as food by humans. Seafood prominently includes fish and shellfish."
+  },
+  {
+    "idCategory": "6",
+    "strCategory": "Vegetarian",
+    "strCategoryThumb": "https://www.themealdb.com/images/category/vegetarian.png",
+    "strCategoryDescription": "Vegetarian cuisine is based on food that meets vegetarian standards by not including meat and animal tissue products."
+  },
+  {
+    "idCategory": "7",
+    "strCategory": "Breakfast",
+    "strCategoryThumb": "https://www.themealdb.com/images/category/breakfast.png",
+    "strCategoryDescription": "Breakfast is the first meal of a day. The word derives from breaking the fasting period of the previous night."
+  },
+  {
+    "idCategory": "8",
+    "strCategory": "Lamb",
+    "strCategoryThumb": "https://www.themealdb.com/images/category/lamb.png",
+    "strCategoryDescription": "Lamb, hogget, and mutton are the meat of domestic sheep at different ages."
+  }
+]
