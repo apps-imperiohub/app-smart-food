@@ -26,25 +26,25 @@ interface Theme {
 }
 
 const purpleTheme: Theme = {
-  primary: "#6A1B9A",
-  background: "#F3E5F5",
-  text: "#4A148C",
-  border: "#D1C4E9",
+  primary: "#E53935",
+  background: "#FAFAFA",
+  text: "#1A1A1A",
+  border: "#E0E0E0",
   white: "#FFFFFF",
-  textLight: "#BA68C8",
+  textLight: "#757575",
   card: "#FFFFFF",
   shadow: "#000000",
-  disabled: "#999999",
+  disabled: "#BDBDBD",
 };
 
 export const COLORS: Theme = purpleTheme;
 
 // Gradientes para componentes específicos
 export const GRADIENTS = {
-  prepTime: ['#FF6B6B', '#FF8E53'],      // Tiempo de preparación (rojo-naranja)
-  servings: ['#4ECDC4', '#44A08D'],      // Porciones (turquesa-verde)
+  prepTime: ['#FF5252', '#FF7043'],      // Tiempo de preparación (rojo-naranja)
+  servings: ['#FFC107', '#FFB300'],      // Porciones (amarillo dorado)
   videoTutorial: ['#FF0000', '#CC0000'], // Botón YouTube (rojo brand)
-  instructions: ['#9C27B0', '#673AB7'],  // Instrucciones (púrpura)
+  instructions: ['#E53935', '#D32F2F'],  // Instrucciones (rojo marca)
 } as const;
 
 // Transparencias estandarizadas

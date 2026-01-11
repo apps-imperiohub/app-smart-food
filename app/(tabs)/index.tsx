@@ -1,14 +1,21 @@
-import { View, Text, ScrollView, TouchableOpacity, FlatList, RefreshControl } from "react-native";
-import { useEffect, useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import {
+  FlatList,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import CategoryFilter from "../../src/components/CategoryFilter";
+import LoadingSpinner from "../../src/components/LoadingSpinner";
+import RecipeCard from "../../src/components/RecipeCard";
+import { COLORS } from "../../src/constants/colors";
 import { MealAPI } from "../../src/services/mealAPI";
 import { homeStyles } from "../../src/styles/home.styles";
-import { Image } from "expo-image";
-import { COLORS } from "../../src/constants/colors";
-import { Ionicons } from "@expo/vector-icons";
-import CategoryFilter from "../../src/components/CategoryFilter";
-import RecipeCard from "../../src/components/RecipeCard";
-import LoadingSpinner from "../../src/components/LoadingSpinner";
 
 interface Category {
   id: number;
@@ -47,12 +54,14 @@ const HomeScreen = () => {
         MealAPI.getRandomMeal(),
       ]);
 
-      const transformedCategories: Category[] = apiCategories.map((cat: any, index: number) => ({
-        id: index + 1,
-        name: cat.strCategory,
-        image: cat.strCategoryThumb,
-        description: cat.strCategoryDescription,
-      }));
+      const transformedCategories: Category[] = apiCategories.map(
+        (cat: any, index: number) => ({
+          id: index + 1,
+          name: cat.strCategory,
+          image: cat.strCategoryThumb,
+          description: cat.strCategoryDescription,
+        })
+      );
 
       setCategories(transformedCategories);
 
@@ -103,7 +112,8 @@ const HomeScreen = () => {
     loadData();
   }, []);
 
-  if (loading && !refreshing) return <LoadingSpinner message="Loading delicions recipes..." />;
+  if (loading && !refreshing)
+    return <LoadingSpinner message="Loading delicions recipes..." />;
 
   return (
     <View style={homeStyles.container}>
@@ -170,17 +180,35 @@ const HomeScreen = () => {
 
                     <View style={homeStyles.featuredMeta}>
                       <View style={homeStyles.metaItem}>
-                        <Ionicons name="time-outline" size={16} color={COLORS.white} />
-                        <Text style={homeStyles.metaText}>{featuredRecipe.cookTime}</Text>
+                        <Ionicons
+                          name="time-outline"
+                          size={16}
+                          color={COLORS.white}
+                        />
+                        <Text style={homeStyles.metaText}>
+                          {featuredRecipe.cookTime}
+                        </Text>
                       </View>
                       <View style={homeStyles.metaItem}>
-                        <Ionicons name="people-outline" size={16} color={COLORS.white} />
-                        <Text style={homeStyles.metaText}>{featuredRecipe.servings}</Text>
+                        <Ionicons
+                          name="people-outline"
+                          size={16}
+                          color={COLORS.white}
+                        />
+                        <Text style={homeStyles.metaText}>
+                          {featuredRecipe.servings}
+                        </Text>
                       </View>
                       {featuredRecipe.area && (
                         <View style={homeStyles.metaItem}>
-                          <Ionicons name="location-outline" size={16} color={COLORS.white} />
-                          <Text style={homeStyles.metaText}>{featuredRecipe.area}</Text>
+                          <Ionicons
+                            name="location-outline"
+                            size={16}
+                            color={COLORS.white}
+                          />
+                          <Text style={homeStyles.metaText}>
+                            {featuredRecipe.area}
+                          </Text>
                         </View>
                       )}
                     </View>
@@ -216,9 +244,15 @@ const HomeScreen = () => {
             />
           ) : (
             <View style={homeStyles.emptyState}>
-              <Ionicons name="restaurant-outline" size={64} color={COLORS.textLight} />
+              <Ionicons
+                name="restaurant-outline"
+                size={64}
+                color={COLORS.textLight}
+              />
               <Text style={homeStyles.emptyTitle}>No recipes found</Text>
-              <Text style={homeStyles.emptyDescription}>Try a different category</Text>
+              <Text style={homeStyles.emptyDescription}>
+                Try a different category
+              </Text>
             </View>
           )}
         </View>
