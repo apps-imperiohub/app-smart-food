@@ -8,7 +8,7 @@ import { Image } from "expo-image";
 
 import { recipeDetailStyles } from "../../src/styles/recipe-detail.styles";
 import { LinearGradient } from "expo-linear-gradient";
-import { COLORS } from "../../src/constants/colors";
+import { COLORS, GRADIENTS, TRANSPARENCY, TRANSPARENT } from "../../src/constants/colors";
 
 import { Ionicons } from "@expo/vector-icons";
 import { WebView } from "react-native-webview";
@@ -128,7 +128,7 @@ const RecipeDetailScreen = () => {
           </View>
 
           <LinearGradient
-            colors={["transparent", "rgba(0,0,0,0.5)", "rgba(0,0,0,0.9)"]}
+            colors={[TRANSPARENT, TRANSPARENCY.blackMedium, TRANSPARENCY.blackAlmostOpaque]}
             style={recipeDetailStyles.gradientOverlay}
           />
 
@@ -143,7 +143,7 @@ const RecipeDetailScreen = () => {
             <TouchableOpacity
               style={[
                 recipeDetailStyles.floatingButton,
-                { backgroundColor: isSaving ? "#999" : COLORS.primary },
+                { backgroundColor: isSaving ? COLORS.disabled : COLORS.primary },
               ]}
               onPress={handleToggleSave}
               disabled={isSaving}
@@ -176,7 +176,7 @@ const RecipeDetailScreen = () => {
           <View style={recipeDetailStyles.statsContainer}>
             <View style={recipeDetailStyles.statCard}>
               <LinearGradient
-                colors={["#FF6B6B", "#FF8E53"]}
+                colors={GRADIENTS.prepTime}
                 style={recipeDetailStyles.statIconContainer}
               >
                 <Ionicons name="time" size={20} color={COLORS.white} />
@@ -187,7 +187,7 @@ const RecipeDetailScreen = () => {
 
             <View style={recipeDetailStyles.statCard}>
               <LinearGradient
-                colors={["#4ECDC4", "#44A08D"]}
+                colors={GRADIENTS.servings}
                 style={recipeDetailStyles.statIconContainer}
               >
                 <Ionicons name="people" size={20} color={COLORS.white} />
@@ -201,7 +201,7 @@ const RecipeDetailScreen = () => {
             <View style={recipeDetailStyles.sectionContainer}>
               <View style={recipeDetailStyles.sectionTitleRow}>
                 <LinearGradient
-                  colors={["#FF0000", "#CC0000"]}
+                  colors={GRADIENTS.videoTutorial}
                   style={recipeDetailStyles.sectionIcon}
                 >
                   <Ionicons name="play" size={16} color={COLORS.white} />
@@ -255,7 +255,7 @@ const RecipeDetailScreen = () => {
           <View style={recipeDetailStyles.sectionContainer}>
             <View style={recipeDetailStyles.sectionTitleRow}>
               <LinearGradient
-                colors={["#9C27B0", "#673AB7"]}
+                colors={GRADIENTS.instructions}
                 style={recipeDetailStyles.sectionIcon}
               >
                 <Ionicons name="book" size={16} color={COLORS.white} />

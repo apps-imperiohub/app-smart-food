@@ -1,5 +1,5 @@
 import { StyleSheet, Dimensions } from "react-native";
-import { COLORS } from "../constants/colors";
+import { COLORS, OVERLAY, TRANSPARENCY } from "../constants/colors";
 
 const { height } = Dimensions.get("window");
 
@@ -38,7 +38,7 @@ export const recipeDetailStyles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    backgroundColor: TRANSPARENCY.blackLight,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -68,7 +68,7 @@ export const recipeDetailStyles = StyleSheet.create({
     fontWeight: "bold",
     color: COLORS.white,
     marginBottom: 8,
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowColor: OVERLAY.textShadowDark,
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
   },
@@ -82,7 +82,7 @@ export const recipeDetailStyles = StyleSheet.create({
     color: COLORS.white,
     fontSize: 16,
     fontWeight: "500",
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowColor: OVERLAY.textShadowDark,
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
