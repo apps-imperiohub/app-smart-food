@@ -1,15 +1,8 @@
 import { useEffect, useState } from "react";
 import { MealAPI } from "../services/mealAPI";
 import { useDebounce } from "./useDebounce";
-
-export interface Recipe {
-  id: string;
-  title: string;
-  description?: string;
-  image: string;
-  cookTime?: string;
-  servings?: number;
-}
+import { Recipe } from "../types/recipe";
+import type { TransformedRecipe } from "../services/mealAPI";
 
 export const useRecipeSearch = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,7 +18,7 @@ export const useRecipeSearch = () => {
       const randomMeals = await MealAPI.getRandomMeals(12);
       return randomMeals
         .map((meal) => MealAPI.transformMealData(meal))
-        .filter((meal): meal is Recipe => meal !== null);
+        .filter((meal): meal is TransformedRecipe => meal !== null);
     }
 
     // search by name first, then by ingredient if no results
@@ -40,7 +33,7 @@ export const useRecipeSearch = () => {
     return results
       .slice(0, 12)
       .map((meal) => MealAPI.transformMealData(meal))
-      .filter((meal): meal is Recipe => meal !== null);
+      .filter((meal): meal is TransformedRecipe => meal !== null);
   };
 
   const clearSearch = () => {

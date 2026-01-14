@@ -3,17 +3,7 @@ import { FlatList, Text, View } from "react-native";
 import { COLORS } from "../../constants/colors";
 import { homeStyles } from "../../styles/home.styles";
 import RecipeCard from "../RecipeCard";
-
-interface Recipe {
-  id: string;
-  title: string;
-  description?: string;
-  image: string;
-  cookTime?: string;
-  servings?: number;
-  category?: string;
-  area?: string;
-}
+import { Recipe } from "../../types/recipe";
 
 interface RecipesGridProps {
   recipes: Recipe[];
@@ -32,8 +22,6 @@ const RecipesGrid = ({ recipes, categoryName }: RecipesGridProps) => {
           data={recipes}
           renderItem={({ item }) => <RecipeCard recipe={item} />}
           keyExtractor={(item) => item.id.toString()}
-          numColumns={2}
-          columnWrapperStyle={homeStyles.row}
           contentContainerStyle={homeStyles.recipesGrid}
           scrollEnabled={false}
         />
