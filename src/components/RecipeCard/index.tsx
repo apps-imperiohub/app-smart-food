@@ -75,8 +75,9 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
           </Text>
           <View style={recipeCardStyles.infoContainer_header_number}>
             <Text style={recipeCardStyles.infoContainer_header_number_text}>
-              {recipe.stars} {renderStars(recipe.stars)}
+              {recipe.stars}
             </Text>
+            {renderStars(recipe.stars)}
             <Text style={recipeCardStyles.infoContainer_header_number_text}>({recipe.sales})</Text>
           </View>
         </View>
