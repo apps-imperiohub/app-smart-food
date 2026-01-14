@@ -1,9 +1,9 @@
-import { View, Text, FlatList } from "react-native";
+import { FlatList, Text, View } from "react-native";
+import { Recipe } from "../../hooks/useRecipeSearch";
 import { searchStyles } from "../../styles/search.styles";
-import RecipeCard from "../RecipeCard";
 import LoadingSpinner from "../LoadingSpinner";
 import { NoResultsFound } from "../NoResultsFound";
-import { Recipe } from "../../hooks/useRecipeSearch";
+import RecipeCard from "../RecipeCard";
 
 interface SearchResultsProps {
   searchQuery: string;
@@ -11,7 +11,11 @@ interface SearchResultsProps {
   loading: boolean;
 }
 
-export const SearchResults = ({ searchQuery, recipes, loading }: SearchResultsProps) => {
+export const SearchResults = ({
+  searchQuery,
+  recipes,
+  loading,
+}: SearchResultsProps) => {
   return (
     <View style={searchStyles.resultsSection}>
       <View style={searchStyles.resultsHeader}>

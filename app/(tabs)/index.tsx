@@ -26,6 +26,7 @@ const HomeScreen = () => {
 
   return (
     <View style={homeStyles.container}>
+      {/* Scroll principal con pull-to-refresh */}
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -37,12 +38,15 @@ const HomeScreen = () => {
         }
         contentContainerStyle={homeStyles.scrollContent}
       >
+        {/* Barra de iconos de animales en la parte superior */}
         <AnimalIcons />
 
+        {/* Card destacada de receta principal */}
         {featuredRecipe && (
           <FeaturedRecipe recipe={featuredRecipe} onPress={handleRecipePress} />
         )}
 
+        {/* Filtro horizontal de categorías */}
         {categories.length > 0 && selectedCategory && (
           <CategoryFilter
             categories={categories}
@@ -51,6 +55,7 @@ const HomeScreen = () => {
           />
         )}
 
+        {/* Grilla de recetas filtradas por categoría */}
         <RecipesGrid recipes={recipes} categoryName={selectedCategory} />
       </ScrollView>
     </View>

@@ -3,20 +3,7 @@ import { Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { MealAPI } from "../services/mealAPI";
 import { FavoritesAPI } from "../services/favoritesAPI";
-
-interface Recipe {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  cookTime: string;
-  servings: number;
-  category: string;
-  area: string;
-  ingredients: string[];
-  instructions: string[];
-  youtubeUrl?: string | null;
-}
+import { Recipe } from "../types/recipe";
 
 export const useRecipeDetail = (recipeId: string) => {
   const router = useRouter();
@@ -87,8 +74,8 @@ export const useRecipeDetail = (recipeId: string) => {
           recipeId: recipeId,
           title: recipe.title,
           image: recipe.image,
-          cookTime: recipe.cookTime,
-          servings: recipe.servings,
+          cookTime: recipe.cookTime || "30 minutes",
+          servings: recipe.servings || 4,
         });
         setIsSaved(true);
       }

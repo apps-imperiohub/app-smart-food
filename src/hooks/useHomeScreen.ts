@@ -1,24 +1,7 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { MealAPI } from "../services/mealAPI";
-
-interface Category {
-  id: number;
-  name: string;
-  image: string;
-  description: string;
-}
-
-interface Recipe {
-  id: string;
-  title: string;
-  description?: string;
-  image: string;
-  cookTime?: string;
-  servings?: number;
-  category?: string;
-  area?: string;
-}
+import { MealAPI, TransformedRecipe } from "../services/mealAPI";
+import { Recipe, Category } from "../types/recipe";
 
 export const useHomeScreen = () => {
   const router = useRouter();
@@ -54,7 +37,7 @@ export const useHomeScreen = () => {
 
       const transformedMeals = randomMeals
         .map((meal) => MealAPI.transformMealData(meal))
-        .filter((meal): meal is Recipe => meal !== null);
+        .filter((meal): meal is TransformedRecipe => meal !== null);
 
       setRecipes(transformedMeals);
 
@@ -74,7 +57,7 @@ export const useHomeScreen = () => {
       const meals = await MealAPI.filterByCategory(category);
       const transformedMeals = meals
         .map((meal) => MealAPI.transformMealData(meal))
-        .filter((meal): meal is Recipe => meal !== null);
+        .filter((meal): meal is TransformedRecipe => meal !== null);
       setRecipes(transformedMeals);
     } catch (error) {
       console.error("Error loading category data:", error);

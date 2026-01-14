@@ -3,17 +3,7 @@ import { Image } from "expo-image";
 import { Text, TouchableOpacity, View } from "react-native";
 import { COLORS } from "../../constants/colors";
 import { homeStyles } from "../../styles/home.styles";
-
-interface Recipe {
-  id: string;
-  title: string;
-  description?: string;
-  image: string;
-  cookTime?: string;
-  servings?: number;
-  category?: string;
-  area?: string;
-}
+import { Recipe } from "../../types/recipe";
 
 interface FeaturedRecipeProps {
   recipe: Recipe;
