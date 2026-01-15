@@ -1,112 +1,32 @@
-import { View, Text, ScrollView, TouchableOpacity, FlatList, RefreshControl } from "react-native";
-import { useEffect, useState } from "react";
-import { useRouter } from "expo-router";
-import { MealAPI } from "../../src/services/mealAPI";
-import { homeStyles } from "../../src/styles/home.styles";
-import { Image } from "expo-image";
-import { COLORS } from "../../src/constants/colors";
-import { Ionicons } from "@expo/vector-icons";
+import { RefreshControl, ScrollView, View } from "react-native";
+import AnimalIcons from "../../src/components/AnimalIcons";
 import CategoryFilter from "../../src/components/CategoryFilter";
-import RecipeCard from "../../src/components/RecipeCard";
+import FeaturedRecipe from "../../src/components/FeaturedRecipe";
 import LoadingSpinner from "../../src/components/LoadingSpinner";
-
-interface Category {
-  id: number;
-  name: string;
-  image: string;
-  description: string;
-}
-
-interface Recipe {
-  id: string;
-  title: string;
-  description?: string;
-  image: string;
-  cookTime?: string;
-  servings?: number;
-  category?: string;
-  area?: string;
-}
+import RecipesGrid from "../../src/components/RecipesGrid";
+import { COLORS } from "../../src/constants/colors";
+import { useHomeScreen } from "../../src/hooks/useHomeScreen";
+import { homeStyles } from "../../src/styles/home.styles";
 
 const HomeScreen = () => {
-  const router = useRouter();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [featuredRecipe, setFeaturedRecipe] = useState<Recipe | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const {
+    selectedCategory,
+    recipes,
+    categories,
+    featuredRecipe,
+    loading,
+    refreshing,
+    handleCategorySelect,
+    onRefresh,
+    handleRecipePress,
+  } = useHomeScreen();
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-
-      const [apiCategories, randomMeals, featuredMeal] = await Promise.all([
-        MealAPI.getCategories(),
-        MealAPI.getRandomMeals(12),
-        MealAPI.getRandomMeal(),
-      ]);
-
-      const transformedCategories: Category[] = apiCategories.map((cat: any, index: number) => ({
-        id: index + 1,
-        name: cat.strCategory,
-        image: cat.strCategoryThumb,
-        description: cat.strCategoryDescription,
-      }));
-
-      setCategories(transformedCategories);
-
-      if (!selectedCategory) setSelectedCategory(transformedCategories[0].name);
-
-      const transformedMeals = randomMeals
-        .map((meal) => MealAPI.transformMealData(meal))
-        .filter((meal): meal is Recipe => meal !== null);
-
-      setRecipes(transformedMeals);
-
-      const transformedFeatured = MealAPI.transformMealData(featuredMeal);
-      if (transformedFeatured) {
-        setFeaturedRecipe(transformedFeatured);
-      }
-    } catch (error) {
-      console.log("Error loading the data", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadCategoryData = async (category: string) => {
-    try {
-      const meals = await MealAPI.filterByCategory(category);
-      const transformedMeals = meals
-        .map((meal) => MealAPI.transformMealData(meal))
-        .filter((meal): meal is Recipe => meal !== null);
-      setRecipes(transformedMeals);
-    } catch (error) {
-      console.error("Error loading category data:", error);
-      setRecipes([]);
-    }
-  };
-
-  const handleCategorySelect = async (category: string) => {
-    setSelectedCategory(category);
-    await loadCategoryData(category);
-  };
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await loadData();
-    setRefreshing(false);
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  if (loading && !refreshing) return <LoadingSpinner message="Loading delicions recipes..." />;
+  if (loading && !refreshing)
+    return <LoadingSpinner message="Loading delicions recipes..." />;
 
   return (
     <View style={homeStyles.container}>
+      {/* Scroll principal con pull-to-refresh */}
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -118,79 +38,15 @@ const HomeScreen = () => {
         }
         contentContainerStyle={homeStyles.scrollContent}
       >
-        {/*  ANIMAL ICONS */}
-        <View style={homeStyles.welcomeSection}>
-          <Image
-            source={require("../../assets/images/lamb.png")}
-            style={{
-              width: 100,
-              height: 100,
-            }}
-          />
-          <Image
-            source={require("../../assets/images/chicken.png")}
-            style={{
-              width: 100,
-              height: 100,
-            }}
-          />
-          <Image
-            source={require("../../assets/images/pork.png")}
-            style={{
-              width: 100,
-              height: 100,
-            }}
-          />
-        </View>
+        {/* Barra de iconos de animales en la parte superior */}
+        <AnimalIcons />
 
-        {/* FEATURED SECTION */}
+        {/* Card destacada de receta principal */}
         {featuredRecipe && (
-          <View style={homeStyles.featuredSection}>
-            <TouchableOpacity
-              style={homeStyles.featuredCard}
-              activeOpacity={0.9}
-              onPress={() => router.push(`/recipe/${featuredRecipe.id}`)}
-            >
-              <View style={homeStyles.featuredImageContainer}>
-                <Image
-                  source={{ uri: featuredRecipe.image }}
-                  style={homeStyles.featuredImage}
-                  contentFit="cover"
-                  transition={500}
-                />
-                <View style={homeStyles.featuredOverlay}>
-                  <View style={homeStyles.featuredBadge}>
-                    <Text style={homeStyles.featuredBadgeText}>Featured</Text>
-                  </View>
-
-                  <View style={homeStyles.featuredContent}>
-                    <Text style={homeStyles.featuredTitle} numberOfLines={2}>
-                      {featuredRecipe.title}
-                    </Text>
-
-                    <View style={homeStyles.featuredMeta}>
-                      <View style={homeStyles.metaItem}>
-                        <Ionicons name="time-outline" size={16} color={COLORS.white} />
-                        <Text style={homeStyles.metaText}>{featuredRecipe.cookTime}</Text>
-                      </View>
-                      <View style={homeStyles.metaItem}>
-                        <Ionicons name="people-outline" size={16} color={COLORS.white} />
-                        <Text style={homeStyles.metaText}>{featuredRecipe.servings}</Text>
-                      </View>
-                      {featuredRecipe.area && (
-                        <View style={homeStyles.metaItem}>
-                          <Ionicons name="location-outline" size={16} color={COLORS.white} />
-                          <Text style={homeStyles.metaText}>{featuredRecipe.area}</Text>
-                        </View>
-                      )}
-                    </View>
-                  </View>
-                </View>
-              </View>
-            </TouchableOpacity>
-          </View>
+          <FeaturedRecipe recipe={featuredRecipe} onPress={handleRecipePress} />
         )}
 
+        {/* Filtro horizontal de categorías */}
         {categories.length > 0 && selectedCategory && (
           <CategoryFilter
             categories={categories}
@@ -199,29 +55,8 @@ const HomeScreen = () => {
           />
         )}
 
-        <View style={homeStyles.recipesSection}>
-          <View style={homeStyles.sectionHeader}>
-            <Text style={homeStyles.sectionTitle}>{selectedCategory}</Text>
-          </View>
-
-          {recipes.length > 0 ? (
-            <FlatList
-              data={recipes}
-              renderItem={({ item }) => <RecipeCard recipe={item} />}
-              keyExtractor={(item) => item.id.toString()}
-              numColumns={2}
-              columnWrapperStyle={homeStyles.row}
-              contentContainerStyle={homeStyles.recipesGrid}
-              scrollEnabled={false}
-            />
-          ) : (
-            <View style={homeStyles.emptyState}>
-              <Ionicons name="restaurant-outline" size={64} color={COLORS.textLight} />
-              <Text style={homeStyles.emptyTitle}>No recipes found</Text>
-              <Text style={homeStyles.emptyDescription}>Try a different category</Text>
-            </View>
-          )}
-        </View>
+        {/* Grilla de recetas filtradas por categoría */}
+        <RecipesGrid recipes={recipes} categoryName={selectedCategory} />
       </ScrollView>
     </View>
   );

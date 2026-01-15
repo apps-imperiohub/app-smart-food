@@ -1,6 +1,7 @@
 // Mock data imports
 import categoriesData from "../data/categories.json";
 import recipesData from "../data/recipes.json";
+import { Recipe } from "../types/recipe";
 
 // const BASE_URL = "https://www.themealdb.com/api/json/v1/1";
 
@@ -15,17 +16,7 @@ interface MealData {
   [key: string]: any;
 }
 
-interface TransformedRecipe {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  cookTime: string;
-  servings: number;
-  category: string;
-  area: string;
-  ingredients: string[];
-  instructions: string[];
+export interface TransformedRecipe extends Recipe {
   originalData: MealData;
 }
 
@@ -169,6 +160,12 @@ export const MealAPI = {
       ? meal.strInstructions.split(/\r?\n/).filter((step) => step.trim())
       : [];
 
+    // generate mock price, stars and sales based on meal id
+    const idNum = parseInt(meal.idMeal);
+    const price = (8 + (idNum % 20)).toFixed(2);
+    const stars = (3.5 + (idNum % 15) / 10).toFixed(1);
+    const sales = (50 + (idNum % 450)).toString();
+
     return {
       id: meal.idMeal,
       title: meal.strMeal,
@@ -182,6 +179,10 @@ export const MealAPI = {
       area: meal.strArea,
       ingredients,
       instructions,
+      youtubeUrl: meal.strYoutube || null,
+      price,
+      stars,
+      sales,
       originalData: meal,
     };
   },

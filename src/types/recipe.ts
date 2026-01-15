@@ -10,6 +10,9 @@ export interface Recipe {
   ingredients?: string[];
   instructions?: string[];
   youtubeUrl?: string | null;
+  price?: string;
+  stars?: string;
+  sales?: string;
 }
 
 export interface Category {

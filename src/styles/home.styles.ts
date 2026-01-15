@@ -1,8 +1,8 @@
-import { StyleSheet, Dimensions } from "react-native";
-import { COLORS } from "../constants/colors";
+import { Dimensions, StyleSheet } from "react-native";
+import { COLORS, TRANSPARENCY } from "../constants/colors";
 
 const { width } = Dimensions.get("window");
-const cardWidth = (width - 48) / 2;
+const cardWidth = width - 32; // Ancho completo menos padding horizontal (16 * 2)
 
 export const homeStyles = StyleSheet.create({
   container: {
@@ -54,7 +54,7 @@ export const homeStyles = StyleSheet.create({
   },
   featuredOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.3)",
+    backgroundColor: TRANSPARENCY.blackLight,
     justifyContent: "space-between",
     padding: 20,
   },
@@ -78,7 +78,7 @@ export const homeStyles = StyleSheet.create({
     fontWeight: "800",
     color: COLORS.white,
     marginBottom: 12,
-    textShadowColor: "rgba(0,0,0,0.3)",
+    textShadowColor: TRANSPARENCY.blackLight,
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
   },
@@ -97,8 +97,9 @@ export const homeStyles = StyleSheet.create({
     fontWeight: "600",
   },
   recipesSection: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 5,
     marginTop: 8,
+    // backgroundColor: "#FFE5E5", // Color temporal para visualización
   },
   sectionHeader: {
     marginBottom: 16,
@@ -110,10 +111,6 @@ export const homeStyles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   recipesGrid: {
-    gap: 16,
-  },
-  row: {
-    justifyContent: "space-between",
     gap: 16,
   },
   emptyState: {
@@ -189,6 +186,8 @@ export const homeStyles = StyleSheet.create({
 
 export const recipeCardStyles = StyleSheet.create({
   container: {
+    display: "flex",
+    flexDirection: "column",
     width: cardWidth,
     backgroundColor: COLORS.card,
     borderRadius: 16,
@@ -205,7 +204,7 @@ export const recipeCardStyles = StyleSheet.create({
   },
   imageContainer: {
     position: "relative",
-    height: 140,
+    height: 200,
   },
   image: {
     width: "100%",
