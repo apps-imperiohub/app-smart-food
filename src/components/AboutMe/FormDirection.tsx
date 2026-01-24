@@ -1,8 +1,10 @@
 import { COLORS } from "@/constants/colors";
 import { favoritesStyles } from "@/styles/favorites.styles";
 import { Picker } from "@react-native-picker/picker";
+import { useNavigation, useRouter } from "expo-router";
 import { Formik } from "formik";
 import {
+  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -10,25 +12,34 @@ import {
   View,
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import configureData from "./useAboutMe";
+import useFormDirection from "./useFormDirection";
 
 const FormDirection = () => {
-  const { CIUDADES } = configureData();
+  const { CIUDADES, agregarDireccion, entregaData } = useFormDirection(); // AÑADIR entregaData aquí
+  const navigation = useNavigation();
+  const router = useRouter();
+
   return (
     <View>
       <View style={styles.header}>
-        <Svg viewBox="0 0 24 24" width="24" height="24">
-          <Path
-            d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"
-            fill="#000000"
-          />
-        </Svg>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Svg viewBox="0 0 24 24" width="24" height="24">
+            <Path
+              d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"
+              fill="#000000"
+            />
+          </Svg>
+        </TouchableOpacity>
         <Text style={{ ...favoritesStyles.title, fontSize: 22 }}>
-          Editar la Direccion
+          Agregar Dirección
         </Text>
-        <Text style={[favoritesStyles.title, { fontSize: 22, color: "red" }]}>
-          Borrar
-        </Text>
+        <TouchableOpacity
+          onPress={() => Alert.alert("Borrar", "Función de borrar")}
+        >
+          <Text style={[favoritesStyles.title, { fontSize: 16, color: "red" }]}>
+            Borrar
+          </Text>
+        </TouchableOpacity>
       </View>
 
       <View>
@@ -43,7 +54,74 @@ const FormDirection = () => {
             numeroCasa: "",
             direccion: "",
           }}
-          onSubmit={(values) => console.log(values)}
+          onSubmit={(values) => {
+            console.log("Valores del formulario:", values); // Para depurar
+
+            // Validaciones básicas
+            if (!values.nombre.trim()) {
+              Alert.alert("Error", "El nombre es requerido");
+              return;
+            }
+            if (!values.numero.trim()) {
+              Alert.alert("Error", "El número es requerido");
+              return;
+            }
+            if (!values.pais) {
+              Alert.alert("Error", "Selecciona un país");
+              return;
+            }
+            if (!values.ciudad) {
+              Alert.alert("Error", "Selecciona una ciudad");
+              return;
+            }
+            if (!values.Sectores) {
+              Alert.alert("Error", "Selecciona un sector");
+              return;
+            }
+            if (!values.direccion.trim()) {
+              Alert.alert("Error", "La dirección es requerida");
+              return;
+            }
+            if (!values.numeroCasa.trim()) {
+              Alert.alert("Error", "El número de casa es requerido");
+              return;
+            }
+
+            // Calcular el próximo ID (si hay datos)
+            const nextId =
+              entregaData.length > 0
+                ? Math.max(...entregaData.map((d) => d.id)) + 1
+                : 1;
+
+            // Crear nueva dirección
+            const nuevaDireccion = {
+              id: nextId,
+              nombre: values.nombre,
+              codigo: values.codigo,
+              numero: values.numero,
+              pais: values.pais,
+              Sectores: values.Sectores,
+              ciudad: values.ciudad,
+              numeroCasa: values.numeroCasa,
+              direccion: values.direccion,
+            };
+
+            console.log("Nueva dirección a agregar:", nuevaDireccion);
+
+            // Agregar la dirección
+            agregarDireccion(nuevaDireccion);
+
+            // Mostrar mensaje de éxito
+            Alert.alert("¡Éxito!", "Dirección agregada correctamente", [
+              {
+                text: "OK",
+                onPress: () => {
+                  // Regresar a la pantalla anterior
+                  navigation.goBack();
+                },
+              },
+            ]);
+          }}
         >
           {({
             handleChange,
@@ -77,7 +155,7 @@ const FormDirection = () => {
               <View style={styles.card}>
                 <TextInput
                   style={styles.input}
-                  placeholder="nombre"
+                  placeholder="Nombre *"
                   onChangeText={handleChange("nombre")}
                   onBlur={handleBlur("nombre")}
                   value={values.nombre}
@@ -91,19 +169,19 @@ const FormDirection = () => {
                 >
                   <Picker
                     style={{ ...styles.input, width: "30%" }}
-                    placeholder="+52"
                     onValueChange={handleChange("codigo")}
                     onBlur={handleBlur("codigo")}
                     selectedValue={values.codigo}
                   >
-                    <Picker.Item label="+1" value="+1" />
+                    <Picker.Item label="+52" value="+52" />
                   </Picker>
                   <TextInput
                     style={{ ...styles.input, width: "65%" }}
-                    placeholder="numero"
+                    placeholder="Número *"
                     onChangeText={handleChange("numero")}
                     onBlur={handleBlur("numero")}
                     value={values.numero}
+                    keyboardType="phone-pad"
                   />
                 </View>
               </View>
@@ -119,58 +197,49 @@ const FormDirection = () => {
                 <Text style={{ ...favoritesStyles.title, fontSize: 14 }}>
                   Direccion de entrega
                 </Text>
-                <Text
-                  style={{
-                    ...favoritesStyles.title,
-                    fontSize: 14,
-                    color: COLORS.textLight,
-                  }}
-                >
-                  Use ubicacion actual
-                </Text>
+                <TouchableOpacity>
+                  <Text
+                    style={{
+                      ...favoritesStyles.title,
+                      fontSize: 14,
+                      color: COLORS.textLight,
+                    }}
+                  >
+                    Use ubicacion actual
+                  </Text>
+                </TouchableOpacity>
               </View>
 
               <View style={styles.card}>
                 <Picker
                   style={styles.input}
-                  placeholder="pais"
                   onValueChange={handleChange("pais")}
                   onBlur={handleBlur("pais")}
                   selectedValue={values.pais}
+                  enabled={false}
                 >
                   <Picker.Item
-                    label="Selecciona un país"
-                    value=""
-                    enabled={false}
-                  />
-                  <Picker.Item
-                    label="Repoblica Dominicana"
-                    value="Repoblica Dominicana"
+                    label="República Dominicana"
+                    value="República Dominicana"
                   />
                 </Picker>
                 <Picker
                   style={styles.input}
-                  placeholder="ciudad"
                   onValueChange={handleChange("ciudad")}
                   onBlur={handleBlur("ciudad")}
                   selectedValue={values.ciudad}
+                  enabled={false}
                 >
-                  <Picker.Item
-                    label="Selecciona una Ciudad"
-                    value=""
-                    enabled={false}
-                  />
                   <Picker.Item label="Santo Domingo" value="Santo Domingo" />
                 </Picker>
                 <Picker
                   style={styles.input}
-                  placeholder="Sectores"
                   onValueChange={handleChange("Sectores")}
                   onBlur={handleBlur("Sectores")}
                   selectedValue={values.Sectores}
                 >
                   <Picker.Item
-                    label={`Selecciona Un Sector`}
+                    label={`Selecciona Un Sector *`}
                     value=""
                     enabled={false}
                   />
@@ -180,14 +249,14 @@ const FormDirection = () => {
                 </Picker>
                 <TextInput
                   style={styles.input}
-                  placeholder="Direccion"
+                  placeholder="Dirección *"
                   onChangeText={handleChange("direccion")}
                   onBlur={handleBlur("direccion")}
                   value={values.direccion}
                 />
                 <TextInput
                   style={styles.input}
-                  placeholder="numero De Casa"
+                  placeholder="Número de Casa *"
                   onChangeText={handleChange("numeroCasa")}
                   onBlur={handleBlur("numeroCasa")}
                   value={values.numeroCasa}
@@ -216,7 +285,11 @@ const FormDirection = () => {
                       alignItems: "center",
                     },
                   ]}
-                  onPress={() => console.log("Pressed")}
+                  onPress={() => {
+                    console.log("Botón presionado"); // Para depurar
+                    handleSubmit();
+                    router.push("/orders/earring");
+                  }}
                 >
                   <Text style={{ ...favoritesStyles.title, fontSize: 16 }}>
                     Guardar Dirección
@@ -274,34 +347,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.button,
     width: 300,
     height: 40,
-  },
-  phoneContainer: {
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    backgroundColor: "#f9f9f9",
-    height: 48,
-  },
-  phoneTextContainer: {
-    borderRadius: 8,
-    backgroundColor: "#f9f9f9",
-    paddingVertical: 0,
-    height: 46,
-  },
-  phoneInput: {
-    fontSize: 16,
-    height: 46,
-    color: "#000",
-  },
-  phoneCodeText: {
-    fontSize: 16,
-    color: "#000",
-  },
-  phoneFlagButton: {
-    width: 60,
-    borderRightWidth: 1,
-    borderRightColor: "#ddd",
   },
 });
 export default FormDirection;

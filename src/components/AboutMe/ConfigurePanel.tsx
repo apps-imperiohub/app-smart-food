@@ -1,5 +1,4 @@
 import { COLORS } from "@/constants/colors";
-import { favoritesStyles } from "@/styles/favorites.styles";
 import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import configureData from "./useAboutMe";
@@ -12,10 +11,14 @@ const ConfigurePanel = () => {
         <Text style={styles.titleDiv}>Socio HD</Text>
         <View style={styles.cardContainer}>
           {socioHd.map((item, index) => (
-            <View key={index} style={styles.item}>
+            <Link
+              key={index}
+              style={styles.item}
+              href={(item.href && item.href) || "/"}
+            >
               <View style={styles.svgContainer}>{item.svg}</View>
               <Text style={styles.title}>{item.title}</Text>
-            </View>
+            </Link>
           ))}
         </View>
       </View>
@@ -58,21 +61,7 @@ const ConfigurePanel = () => {
           justifyContent: "center",
           marginBottom: 20,
         }}
-      >
-        <Link style={styles.button} href="/orders/earring">
-          <Text
-            style={{
-              ...favoritesStyles.title,
-              fontSize: 16,
-              textAlign: "center",
-              textAlignVertical: "center",
-              lineHeight: 40,
-            }}
-          >
-            Pedidos Pendiente
-          </Text>
-        </Link>
-      </View>
+      ></View>
     </View>
   );
 };
@@ -111,6 +100,10 @@ const styles = StyleSheet.create({
     width: 80,
     height: 60,
     marginBottom: 30,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
   },
   titleDiv: {
     color: COLORS.text,

@@ -4,18 +4,7 @@ import Svg, { Path } from "react-native-svg";
 interface Confi {
   title: string;
   svg: JSX.Element;
-}
-interface Entrega {
-  nombre: string;
-  codigo: string;
-  numero: string;
-  pais: string;
-  direccion: string;
-  hogar: string;
-  codigoPostal: string;
-  estado: string;
-  ciudad: string;
-  numeroCasa: string;
+  href?: string;
 }
 const socioHd: Confi[] = [
   {
@@ -28,6 +17,7 @@ const socioHd: Confi[] = [
         />
       </Svg>
     ),
+    href: "/orders/earring",
   },
   {
     title: "Favoritos",
@@ -191,126 +181,12 @@ const servicios: Confi[] = [
   },
 ];
 
-const entregaData: Entrega[] = [
-  {
-    nombre: "Aldo",
-    codigo: "+52",
-    numero: "5512345678",
-    pais: "México",
-    direccion: "Av. Tecnológico",
-    hogar: "Departamento 301",
-    codigoPostal: "58120",
-    estado: "Michoacán",
-    ciudad: "Morelia",
-    numeroCasa: "1500",
-  },
-  {
-    nombre: "Aldo (Casa)",
-    codigo: "+52",
-    numero: "4431234567",
-    pais: "México",
-    direccion: "Calle Girasoles",
-    hogar: "Casa",
-    codigoPostal: "58260",
-    estado: "Michoacán",
-    ciudad: "Morelia",
-    numeroCasa: "123",
-  },
-  {
-    nombre: "Aldo (Trabajo)",
-    codigo: "+52",
-    numero: "4439876543",
-    pais: "México",
-    direccion: "Blvd. García de León",
-    hogar: "Oficina 502",
-    codigoPostal: "58290",
-    estado: "Michoacán",
-    ciudad: "Morelia",
-    numeroCasa: "2000",
-  },
-];
-const CIUDADES = [
-  "24 de abril",
-  "30 de mayo",
-  "Altos de Arroyo Hondo",
-  "Arroyo Manzano",
-  "Atala",
-  "Bella Vista",
-  "Buenos Aires",
-  "El Cacique",
-  "Centro de los Héroes",
-  "Centro Olímpico",
-  "Cerros de Arroyo Hondo",
-  "Ciudad Colonial",
-  "Ciudad Nueva",
-  "Ciudad Universitaria",
-  "Cristo Rey",
-  "Domingo Savio",
-  "El Millón",
-  "Ensanche Capotillo",
-  "Ensanche Espaillat",
-  "Ensanche La Fe",
-  "Ensanche Luperón",
-  "Ensanche Naco",
-  "Ensanche Quisqueya",
-  "Gascue",
-  "General Antonio Duverge",
-  "Gualey",
-  "Honduras del Norte",
-  "Honduras del Oeste",
-  "Jardín Botánico",
-  "Jardín Zoológico",
-  "Jardines del Sur",
-  "Julieta Morales",
-  "La Agustina",
-  "La Castellana",
-  "La Esperilla",
-  "La Hondonada",
-  "La Isabela",
-  "La Julia",
-  "Las Praderas",
-  "La Zurza",
-  "Los Cacicazgos",
-  "Los Jardines",
-  "Los Peralejos",
-  "Los Prados",
-  "Los Restauradores",
-  "Los Ríos",
-  "María Auxiliadora",
-  "Mata Hambre",
-  "Mejoramiento Social",
-  "Mirador Norte",
-  "Mirador Sur",
-  "Miraflores",
-  "Miramar",
-  "Nuestra Señora de la Paz",
-  "Nuevo Arroyo Hondo",
-  "Palma Real",
-  "Paraíso",
-  "Paseo de los Indios",
-  "Piantini",
-  "Los Próceres",
-  "Renacimiento",
-  "San Carlos",
-  "San Diego",
-  "San Geronimo",
-  "San Juan Bosco",
-  "Simón Bolívar",
-  "Viejo Arroyo Hondo",
-  "Villas Agrícolas",
-  "Villa Consuelo",
-  "Villa Francisca",
-  "Villa Juana",
-];
-
 const configureData = () => {
   return {
     socioHd,
     pedidos,
     beneficios,
     servicios,
-    entregaData,
-    CIUDADES,
   };
 };
 
