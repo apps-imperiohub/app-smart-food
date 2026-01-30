@@ -1,12 +1,12 @@
 import { COLORS } from "@/constants/colors";
-import { favoritesStyles } from "@/styles/favorites.styles";
-import { Link, router } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
   Image,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -16,191 +16,281 @@ import {
 import Svg, { Path } from "react-native-svg";
 import { useGoogleAuth } from "./useGoogleAuth";
 
+// Solo llamar en móvil
 if (Platform.OS !== "web") {
   WebBrowser.maybeCompleteAuthSession();
 }
+
 const GoogleLoginDebug = () => {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({ email: "", password: "" });
 
-  const validate = () => {
-    const newErrors = { email: "", password: "" };
-    if (!email) newErrors.email = "Email es requerido";
-    if (!password) newErrors.password = "Contraseña es requerida";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = () => {
-    if (validate()) {
-      console.log({ email, password });
-    }
-  };
   const {
+    redirectUri,
     user,
     loading,
     initialLoading,
     handleLoginPress,
     handleLogout,
     request,
+    response,
   } = useGoogleAuth();
+
+  const validate = () => {
+    const newErrors = { email: "", password: "" };
+    if (!email) newErrors.email = "Email es requerido";
+    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Email inválido";
+
+    if (!password) newErrors.password = "Contraseña es requerida";
+    else if (password.length < 6) newErrors.password = "Mínimo 6 caracteres";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = () => {
+    if (validate()) {
+      console.log("Login manual:", { email, password });
+      // Aquí iría tu lógica de login con email/password
+      alert(`Login con: ${email}`);
+    }
+  };
+
+  const handleBack = () => {
+    router.back();
+  };
+
   if (initialLoading) {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#4285F4" />
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={COLORS.button} />
         <Text style={styles.loadingText}>Cargando...</Text>
       </View>
     );
   }
+
   return (
-    <View style={{ backgroundColor: COLORS.background }}>
+    <ScrollView
+      style={styles.scrollContainer}
+      contentContainerStyle={styles.scrollContent}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* Header con imagen */}
       <View style={styles.imageContainer}>
-        <Image source={require("../../img/login.jpg")} style={styles.image} />
-        <Link
+        <Image
+          source={require("../../img/login.jpg")}
+          style={styles.image}
+          resizeMode="cover"
+        />
+        <TouchableOpacity
           style={styles.backButton}
-          disabled={!request || loading}
-          href={"/"}
+          onPress={handleBack}
+          activeOpacity={0.7}
         >
-          <Svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <Svg width="24" height="24" viewBox="0 0 46 46" fill="none">
             <Path
-              d="M13 16L7 10L13 4"
+              d="M28 33L17 23L28 13"
               stroke="#FFFFFF"
-              strokeWidth="2"
+              strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           </Svg>
-        </Link>
-      </View>
-      {user ? (
-        // Vista cuando el usuario está logueado
-        <View style={styles.loggedInContainer}>
-          <View style={styles.userInfoCard}>
-            {user.picture && (
-              <Image
-                source={{ uri: user.picture }}
-                style={styles.profileImage}
-              />
-            )}
-            <View style={styles.userInfo}>
-              <Text style={styles.userName}>{user.name}</Text>
-              <Text style={styles.userEmail}>{user.email}</Text>
-              <Text style={styles.userStatus}>✅ Sesión activa con Google</Text>
-            </View>
-          </View>
+        </TouchableOpacity>
 
-          <View style={styles.actionsContainer}>
-            <TouchableOpacity
-              style={[styles.button, styles.logoutButton]}
-              onPress={handleLogout}
-            >
-              <Text style={styles.buttonText}>Cerrar sesión</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.button, styles.secondaryButton]}
-              onPress={() => router.push("/")}
-            >
-              <Text style={styles.secondaryButtonText}>Ir al perfil</Text>
-            </TouchableOpacity>
-          </View>
+        {/* Overlay para el título */}
+        <View style={styles.imageOverlay}>
+          <Text style={styles.welcomeTitle}>Bienvenido</Text>
+          <Text style={styles.welcomeSubtitle}>
+            {user
+              ? `Hola, ${user.name?.split(" ")[0] || user.email}`
+              : "Inicia sesión para continuar"}
+          </Text>
         </View>
-      ) : (
-        <View>
-          <View style={styles.container}>
-            <View
-              style={{
-                display: "flex",
-                marginBottom: 15,
-                width: "100%",
-                flexDirection: "column",
-              }}
-            >
-              <Text style={{ ...favoritesStyles.emptyTitle, fontSize: 18 }}>
-                Email:
-              </Text>
-              <TextInput
-                style={[styles.input, errors.email && styles.inputError]}
-                placeholder="Inserta el Email"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-              {errors.email && (
-                <Text style={styles.errorText}>{errors.email}</Text>
+      </View>
+
+      {/* Contenido principal */}
+      <View style={styles.contentContainer}>
+        {user ? (
+          // Vista cuando el usuario está logueado
+          <View style={styles.loggedInContainer}>
+            <View style={styles.userInfoCard}>
+              {user.picture && (
+                <Image
+                  source={{ uri: user.picture }}
+                  style={styles.profileImage}
+                />
+              )}
+              <View style={styles.userInfo}>
+                <Text style={styles.userName}>{user.name}</Text>
+                <Text style={styles.userEmail}>{user.email}</Text>
+                <Text style={styles.userStatus}>
+                  ✅ Sesión activa con Google
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.actionsContainer}>
+              <TouchableOpacity
+                style={[styles.button, styles.logoutButton]}
+                onPress={handleLogout}
+              >
+                <Text style={styles.buttonText}>Cerrar sesión</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.button, styles.secondaryButton]}
+                onPress={() => router.push("/")}
+              >
+                <Text style={styles.secondaryButtonText}>Ir al perfil</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          // Vista de login (email/password + Google)
+          <>
+            {/* Formulario de login tradicional */}
+            <View style={styles.formContainer}>
+              <Text style={styles.sectionTitle}>Iniciar sesión</Text>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Email</Text>
+                <TextInput
+                  style={[styles.input, errors.email && styles.inputError]}
+                  placeholder="tu@email.com"
+                  value={email}
+                  onChangeText={(text) => {
+                    setEmail(text);
+                    if (errors.email) setErrors({ ...errors, email: "" });
+                  }}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
+                {errors.email && (
+                  <Text style={styles.errorText}>{errors.email}</Text>
+                )}
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Contraseña</Text>
+                <TextInput
+                  style={[styles.input, errors.password && styles.inputError]}
+                  placeholder="••••••••"
+                  value={password}
+                  onChangeText={(text) => {
+                    setPassword(text);
+                    if (errors.password) setErrors({ ...errors, password: "" });
+                  }}
+                  secureTextEntry
+                />
+                {errors.password && (
+                  <Text style={styles.errorText}>{errors.password}</Text>
+                )}
+
+                <Link href="/" style={styles.forgotPasswordLink}>
+                  <Text style={styles.forgotPasswordText}>
+                    ¿Olvidaste tu contraseña?
+                  </Text>
+                </Link>
+              </View>
+
+              <TouchableOpacity
+                style={[styles.button, styles.primaryButton]}
+                onPress={handleSubmit}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.buttonText}>Iniciar sesión</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Separador */}
+            <View style={styles.separatorContainer}>
+              <View style={styles.separatorLine} />
+              <Text style={styles.separatorText}>o continúa con</Text>
+              <View style={styles.separatorLine} />
+            </View>
+
+            {/* Botón de Google */}
+            <View style={styles.googleContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.googleButton,
+                  loading && styles.googleButtonDisabled,
+                ]}
+                onPress={handleLoginPress}
+                disabled={!request || loading}
+                activeOpacity={0.7}
+              >
+                {loading ? (
+                  <ActivityIndicator size="small" color="#666" />
+                ) : (
+                  <>
+                    <Image
+                      source={require("../../img/google.png")}
+                      style={styles.googleIcon}
+                    />
+                    <Text style={styles.googleButtonText}>
+                      Continuar con Google
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
+
+              {!request && (
+                <Text style={styles.configuringText}>
+                  Configurando autenticación...
+                </Text>
               )}
             </View>
-            <View
-              style={{
-                display: "flex",
-                marginBottom: 15,
-                width: "100%",
-                flexDirection: "column",
-              }}
-            >
-              <Text style={{ ...favoritesStyles.emptyTitle, fontSize: 18 }}>
-                Contraseña:
-              </Text>
-              <TextInput
-                style={[styles.input, errors.password && styles.inputError]}
-                placeholder="Inserta el Contraseña"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-              />
-              {errors.password && (
-                <Text style={styles.errorText}>{errors.password}</Text>
-              )}
-              <Link href={"/"} style={styles.forgotPasswordText}>
-                ¿Olvidaste tu contraseña?
+
+            {/* Enlace a registro */}
+            <View style={styles.registerContainer}>
+              <Text style={styles.registerText}>¿No tienes cuenta? </Text>
+              <Link href="/" style={styles.registerLink}>
+                <Text style={styles.registerLinkText}>Regístrate aquí</Text>
               </Link>
             </View>
-            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-              <Text style={styles.buttonText}>Enviar</Text>
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginVertical: 20,
-            }}
-          >
-            <View style={{ ...styles.line, marginLeft: 5 }} />
-            <Text style={styles.title}>Conectate con</Text>
-            <View style={{ ...styles.line, marginRight: 5 }} />
-          </View>
-          <TouchableOpacity
-            style={{ ...styles.button, marginHorizontal: 20 }}
-            onPress={handleLoginPress}
-            disabled={!request || loading}
-          >
-            <Image
-              source={require("../../img/google.png")}
-              style={{ width: 50, height: 50 }}
-            ></Image>
-          </TouchableOpacity>
-        </View>
-      )}
-    </View>
+          </>
+        )}
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: COLORS.background,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: COLORS.textLight,
+  },
+
+  // Header con imagen
   imageContainer: {
     position: "relative",
-    display: "flex",
+    height: 250,
   },
   image: {
     width: "100%",
-    height: 300,
-    resizeMode: "cover",
+    height: "100%",
   },
   backButton: {
     position: "absolute",
-    display: "flex",
     top: Platform.OS === "ios" ? 50 : 40,
     left: 20,
     width: 44,
@@ -215,63 +305,38 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  container: {
-    padding: 20,
+  imageOverlay: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    paddingVertical: 20,
+    paddingHorizontal: 24,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: COLORS.button,
-    borderRadius: 20,
-    padding: 12,
-    marginBottom: 8,
+  welcomeTitle: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+    marginBottom: 4,
+  },
+  welcomeSubtitle: {
     fontSize: 16,
+    color: "rgba(255, 255, 255, 0.9)",
   },
-  inputError: {
-    borderColor: "red",
-  },
-  errorText: {
-    color: "red",
-    fontSize: 12,
-    marginBottom: 10,
-  },
-  button: {
-    backgroundColor: COLORS.button,
-    padding: 15,
-    borderRadius: 20,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  forgotPasswordText: {
-    color: COLORS.textLight,
-    fontSize: 14,
-    marginTop: 5,
-    textAlign: "right",
-  },
-  line: {
+
+  // Contenido principal
+  contentContainer: {
     flex: 1,
-    height: 1,
-    backgroundColor: COLORS.button,
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 40,
   },
-  title: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#666",
-    marginHorizontal: 12,
-  },
-  loadingText: {
-    marginTop: 10,
-    color: "#666",
-  },
+
   // Cuando está logueado
   loggedInContainer: {
     flex: 1,
     justifyContent: "center",
-    marginTop: 20,
-    textAlign: "center",
   },
   userInfoCard: {
     backgroundColor: "#FFFFFF",
@@ -284,7 +349,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
     alignItems: "center",
-    marginHorizontal: 20,
   },
   profileImage: {
     width: 100,
@@ -301,8 +365,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: COLORS.text,
-    textAlign: "center",
     marginBottom: 4,
+    textAlign: "center",
   },
   userEmail: {
     fontSize: 16,
@@ -314,10 +378,63 @@ const styles = StyleSheet.create({
     color: "#4CAF50",
     fontWeight: "500",
   },
+  actionsContainer: {
+    gap: 12,
+  },
 
+  // Formulario
+  formContainer: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: COLORS.text,
+    marginBottom: 24,
+  },
+  inputGroup: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: COLORS.text,
+    marginBottom: 8,
+  },
+  input: {
+    borderWidth: 1.5,
+    borderColor: "#E0E0E0",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 16,
+    backgroundColor: "#FFFFFF",
+    color: COLORS.text,
+  },
+  inputError: {
+    borderColor: "#FF3B30",
+  },
+  errorText: {
+    color: "#FF3B30",
+    fontSize: 14,
+    marginTop: 6,
+  },
   forgotPasswordLink: {
     alignSelf: "flex-end",
     marginTop: 8,
+  },
+  forgotPasswordText: {
+    color: COLORS.button,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+
+  // Botones
+  button: {
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: "center",
+    justifyContent: "center",
   },
   primaryButton: {
     backgroundColor: COLORS.button,
@@ -326,19 +443,98 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     borderWidth: 1.5,
     borderColor: COLORS.button,
-    marginHorizontal: 20,
   },
   logoutButton: {
-    backgroundColor: COLORS.primary,
-    marginHorizontal: 20,
+    backgroundColor: "#FF3B30",
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
   },
   secondaryButtonText: {
     color: COLORS.button,
     fontSize: 16,
     fontWeight: "600",
   },
-  actionsContainer: {
-    gap: 12,
+
+  // Separador
+  separatorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 24,
+  },
+  separatorLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#E0E0E0",
+  },
+  separatorText: {
+    fontSize: 14,
+    color: COLORS.textLight,
+    marginHorizontal: 12,
+    fontWeight: "500",
+  },
+
+  // Google Button
+  googleContainer: {
+    marginBottom: 24,
+    alignItems: "center",
+  },
+  googleButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1.5,
+    borderColor: "#E0E0E0",
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    width: "100%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  googleButtonDisabled: {
+    opacity: 0.6,
+  },
+  googleIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 12,
+  },
+  googleButtonText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: COLORS.text,
+  },
+  configuringText: {
+    fontSize: 14,
+    color: COLORS.textLight,
+    marginTop: 8,
+    fontStyle: "italic",
+  },
+
+  // Registro
+  registerContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 8,
+  },
+  registerText: {
+    fontSize: 15,
+    color: COLORS.textLight,
+  },
+  registerLink: {
+    marginLeft: 4,
+  },
+  registerLinkText: {
+    fontSize: 15,
+    color: COLORS.button,
+    fontWeight: "600",
   },
 });
 
