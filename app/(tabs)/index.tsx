@@ -6,6 +6,7 @@ import LoadingSpinner from "../../src/components/LoadingSpinner";
 import RecipesGrid from "../../src/components/RecipesGrid";
 import { COLORS } from "../../src/constants/colors";
 import { useHomeScreen } from "../../src/hooks/useHomeScreen";
+import { useMenu } from "../../src/hooks/useMenu";
 import { homeStyles } from "../../src/styles/home.styles";
 
 const HomeScreen = () => {
@@ -20,6 +21,7 @@ const HomeScreen = () => {
     onRefresh,
     handleRecipePress,
   } = useHomeScreen();
+  const menu = useMenu();
 
   if (loading && !refreshing)
     return <LoadingSpinner message="Loading delicions recipes..." />;
