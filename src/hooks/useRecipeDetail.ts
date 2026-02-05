@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { Alert } from "react-native";
 import { useRouter } from "expo-router";
-import { MealAPI } from "../services/mealAPI";
+import { useEffect, useState } from "react";
+import { Alert } from "react-native";
 import { FavoritesAPI } from "../services/favoritesAPI";
+import { MealAPI } from "../services/mealAPI";
 import { Recipe } from "../types/recipe";
 
 export const useRecipeDetail = (recipeId: string) => {
@@ -11,6 +11,9 @@ export const useRecipeDetail = (recipeId: string) => {
   const [loading, setLoading] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [ingredientQuantities, setIngredientQuantities] = useState<{
+    [key: number]: number;
+  }>({});
 
   const userId = "mock-user-123"; // Mock user para desarrollo
 
@@ -91,7 +94,83 @@ export const useRecipeDetail = (recipeId: string) => {
     router.back();
   };
 
+  const size = [
+    {
+      text: "XS",
+      Value: 1,
+    },
+    {
+      text: "SM",
+      Value: 2,
+    },
+    {
+      text: "L",
+      Value: 3,
+    },
+    {
+      text: "XL",
+      Value: 4,
+    },
+    {
+      text: "XXL",
+      Value: 5,
+    },
+  ];
+  function textoANumerico(texto: string): number {
+    const limpio = texto.replace(/[^\d.,]/g, "");
+
+    let resultado = limpio;
+
+    const puntoIndex = resultado.indexOf(".");
+
+    if (puntoIndex !== -1 && puntoIndex < resultado.length - 1) {
+      const antesPunto = resultado.substring(0, puntoIndex).replace(/\./g, "");
+      const despuesPunto = resultado.substring(puntoIndex + 1);
+      resultado = antesPunto + "." + despuesPunto;
+    } else {
+      resultado = resultado.replace(/\./g, "");
+    }
+    resultado = resultado.replace(/,/g, "");
+
+    const numero = parseFloat(resultado);
+    return isNaN(numero) ? 0 : numero;
+  }
+  const incrementIngredient = (index: number) => {
+    setIngredientQuantities((prev) => ({
+      ...prev,
+      [index]: (prev[index] || 0) + 1,
+    }));
+  };
+
+  // Función para decrementar un ingrediente
+  const decrementIngredient = (index: number) => {
+    setIngredientQuantities((prev) => {
+      const current = prev[index] || 0;
+      if (current <= 0) return prev;
+      return {
+        ...prev,
+        [index]: current - 1,
+      };
+    });
+  };
+
+  // Función para extraer cantidad y nombre del ingrediente
+  const parseIngredient = (ingredient: string) => {
+    // Ejemplo: "1 package Rice Noodles" → {quantity: "1 package", name: "Rice Noodles"}
+    const parts = ingredient.split(" ");
+    if (parts.length >= 2 && /^\d+/.test(parts[0])) {
+      // Si el primer elemento es un número
+      return {
+        original: ingredient,
+        quantity: parts.slice(0, 2).join(" "), // Toma cantidad + unidad
+        name: parts.slice(2).join(" "),
+      };
+    }
+    return { original: ingredient, quantity: "", name: ingredient };
+  };
   return {
+    textoANumerico,
+    size,
     recipe,
     loading,
     isSaved,
@@ -99,7 +178,13 @@ export const useRecipeDetail = (recipeId: string) => {
     handleToggleSave,
     handleGoBack,
     getYouTubeEmbedUrl,
+    incrementIngredient,
+    decrementIngredient,
+    parseIngredient,
+    ingredientQuantities,
+    setIngredientQuantities,
   };
 };
 
 export type { Recipe };
+
