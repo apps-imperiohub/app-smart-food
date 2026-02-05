@@ -1,11 +1,11 @@
-import { View, Text, ScrollView, TouchableOpacity, FlatList, RefreshControl } from "react-native";
-import { GoogleAuthScreen } from "../../GoogleAuth/GoogleAuthScreen";
+import { Text, View } from "react-native";
 
 function LoginScreen() {
-    return (
-        // <GoogleAuthScreen />
-        <View>
-            <Text>Login Screen</Text>
-        </View>
-    )
+  return (
+    // <GoogleAuthScreen />
+    <View>
+      <Text>Login Screen</Text>
+    </View>
+  );
 }
+export default LoginScreen;

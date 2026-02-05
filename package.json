@@ -6,10 +6,18 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "seed:users": "tsx src/services/seed/users.seed.ts",
+    "seed:platos": "tsx src/services/seed/platos.seed.ts",
+    "seed:bebidas": "tsx src/services/seed/bebidas.seed.ts",
+    "seed:salsas": "tsx src/services/seed/salsas.seed.ts",
+    "seed:pedidos": "tsx src/services/seed/pedido.seed.ts",
+    "seed:carrito": "tsx src/services/seed/carrito.seed.ts",
+    "seed:all": "npm run seed:users && npm run seed:platos && npm run seed:bebidas && npm run seed:salsas && npm run seed:carrito && npm run seed:pedidos"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
+    "@faker-js/faker": "^10.2.0",
     "@react-native-google-signin/google-signin": "^16.1.1",
     "@react-native-picker/picker": "^2.11.4",
     "@react-navigation/native": "^7.1.8",
@@ -42,6 +50,7 @@
     "@types/react": "~19.1.0",
     "expo-module-scripts": "^5.0.8",
     "react-test-renderer": "19.1.0",
+    "tsx": "^4.21.0",
     "typescript": "~5.9.2"
   },
   "private": true

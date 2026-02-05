@@ -1,6 +1,10 @@
 import axios, { AxiosInstance } from "axios";
+import { Platform } from "react-native";
 
-const DEFAULT_API_URL = process.env.API_URL || "http://localhost:3000";
+const DEFAULT_API_URL =
+  Platform.OS === "android"
+    ? "http://10.0.2.2:3000" // Android Emulator → tu máquina
+    : "http://localhost:3000"; // iOS Simulator / Web
 
 export const apiClient: AxiosInstance = axios.create({
   baseURL: `${DEFAULT_API_URL}/api`,
@@ -18,6 +22,7 @@ export function createApiClient(baseURL?: string): AxiosInstance {
   const normalized = url.endsWith("/api")
     ? url
     : `${url.replace(/\/$/, "")}/api`;
+
   return axios.create({
     baseURL: normalized,
     headers: { "Content-Type": "application/json" },
