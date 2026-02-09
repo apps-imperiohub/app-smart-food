@@ -6,6 +6,6 @@ export const useMenu = async () => {
   //const pedidos = await pedidoApi.getAll();
   const salsas = await salsaApi.getAll();
   //const carritos = await cartApi.getCart();
-  console.log(platos[0], bebidas[0], salsas[0]);
+  //console.log(platos[0], bebidas[0], salsas[0]);
   // Hook logic goes here
 };
