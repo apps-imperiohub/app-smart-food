@@ -117,13 +117,14 @@ const RecipeOrder: React.FC<RecipeOrdersProps> = ({
         </View>
       </View>
 
-      <View>
+      <View style={{ marginTop: 20 }}>
         <View
           style={{
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-around",
             paddingHorizontal: 5,
+            height: 50,
           }}
         >
           <Text style={favoritesStyles.title}>Size:</Text>
@@ -190,10 +191,13 @@ const style = StyleSheet.create({
     padding: 5,
     marginHorizontal: 15,
     marginTop: 5,
+    backgroundColor: COLORS.white,
+    // Sombra para iOS
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    // Sombra para Android
     elevation: 3,
   },
   descriptionTitle: {
@@ -228,15 +232,18 @@ const style = StyleSheet.create({
     justifyContent: "center",
     marginLeft: 10,
     height: "100%",
+    width: 50,
   },
   sizeCircleActive: {
-    backgroundColor: COLORS.primary + "20", // Color con transparencia
+    backgroundColor: COLORS.primary + "20",
+    borderRadius: 25,
     borderColor: COLORS.primary,
+    // Sombra más suave
     shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 6,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 4,
   },
   sizeText: {
     fontSize: 14,

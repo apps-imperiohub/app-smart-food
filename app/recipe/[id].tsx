@@ -4,9 +4,15 @@ import RecipeOrder from "@/components/recipeOrder/recipeOrder";
 
 import { COLORS } from "@/constants/colors";
 import { favoritesStyles } from "@/styles/favorites.styles";
-import { Link, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import LoadingSpinner from "../../src/components/LoadingSpinner";
 import { useRecipeDetail } from "../../src/hooks/useRecipeDetail";
 
@@ -59,7 +65,6 @@ const RecipeDetailScreen = () => {
           ingredientQuantities={ingredientQuantities}
           setIngredientQuantities={setIngredientQuantities}
         />
-        {/* Aquí puedes agregar más contenido si necesitas */}
       </ScrollView>
 
       {/* Barra fija FUERA del ScrollView */}
@@ -72,18 +77,23 @@ const RecipeDetailScreen = () => {
             $
           </Text>
         </View>
-        <Link style={style.cartButton} href={"/myCart"}>
+        <TouchableOpacity
+          style={style.cartButton}
+          onPress={() => router.push("/myCart")}
+        >
           <Text
             style={{
               ...favoritesStyles.title,
               fontSize: 18, // Reducido un poco
               color: COLORS.white,
               fontWeight: "600",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             Add To Cart
           </Text>
-        </Link>
+        </TouchableOpacity>
       </View>
     </View>
   );

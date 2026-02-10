@@ -22,7 +22,7 @@ const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
             {column1.map((ingredient, originalIndex) => {
               const parsed = parseIngredient(ingredient);
               const quantity = ingredientQuantities[originalIndex] || 0;
-              const adjustedQuantity = quantity > 0 ? quantity : 1; // Muestra 1 como base
+              const adjustedQuantity = quantity > 0 ? quantity : 0; // Muestra 1 como base
 
               return (
                 <View key={originalIndex} style={style.ingredientRow}>
@@ -71,7 +71,7 @@ const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
               const originalIndex = index + midIndex;
               const parsed = parseIngredient(ingredient);
               const quantity = ingredientQuantities[originalIndex] || 0;
-              const adjustedQuantity = quantity > 0 ? quantity : 1;
+              const adjustedQuantity = quantity > 0 ? quantity : 0;
 
               return (
                 <View key={originalIndex} style={style.ingredientRow}>
@@ -155,8 +155,8 @@ const style = StyleSheet.create({
     borderColor: "#DEE2E6",
   },
   quantityButton: {
-    width: 14,
-    height: 14,
+    width: 20,
+    height: 20,
     borderRadius: 14,
     backgroundColor: COLORS.primary,
     alignItems: "center",
@@ -172,7 +172,7 @@ const style = StyleSheet.create({
     fontWeight: "bold",
   },
   quantityText: {
-    fontSize: 14,
+    fontSize: 10,
     fontWeight: "600",
     color: COLORS.text,
     marginHorizontal: 2,
