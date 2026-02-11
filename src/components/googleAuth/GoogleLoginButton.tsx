@@ -14,7 +14,6 @@ import {
   View,
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { useGoogleAuth } from "./useGoogleAuth";
 
 // Solo llamar en móvil
 if (Platform.OS !== "web") {
@@ -26,50 +25,12 @@ const GoogleLoginDebug = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({ email: "", password: "" });
-
-  const {
-    redirectUri,
-    user,
-    loading,
-    initialLoading,
-    handleLoginPress,
-    handleLogout,
-    request,
-    response,
-  } = useGoogleAuth();
-
-  const validate = () => {
-    const newErrors = { email: "", password: "" };
-    if (!email) newErrors.email = "Email es requerido";
-    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Email inválido";
-
-    if (!password) newErrors.password = "Contraseña es requerida";
-    else if (password.length < 6) newErrors.password = "Mínimo 6 caracteres";
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = () => {
-    if (validate()) {
-      console.log("Login manual:", { email, password });
-      // Aquí iría tu lógica de login con email/password
-      alert(`Login con: ${email}`);
-    }
-  };
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleBack = () => {
     router.back();
   };
-
-  if (initialLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.button} />
-        <Text style={styles.loadingText}>Cargando...</Text>
-      </View>
-    );
-  }
 
   return (
     <ScrollView
@@ -104,9 +65,7 @@ const GoogleLoginDebug = () => {
         <View style={styles.imageOverlay}>
           <Text style={styles.welcomeTitle}>Bienvenido</Text>
           <Text style={styles.welcomeSubtitle}>
-            {user
-              ? `Hola, ${user.name?.split(" ")[0] || user.email}`
-              : "Inicia sesión para continuar"}
+            {user ? `Hola, ${user}` : "Inicia sesión para continuar"}
           </Text>
         </View>
       </View>
@@ -117,15 +76,9 @@ const GoogleLoginDebug = () => {
           // Vista cuando el usuario está logueado
           <View style={styles.loggedInContainer}>
             <View style={styles.userInfoCard}>
-              {user.picture && (
-                <Image
-                  source={{ uri: user.picture }}
-                  style={styles.profileImage}
-                />
-              )}
               <View style={styles.userInfo}>
-                <Text style={styles.userName}>{user.name}</Text>
-                <Text style={styles.userEmail}>{user.email}</Text>
+                <Text style={styles.userName}>{user}</Text>
+                <Text style={styles.userEmail}>{user}</Text>
                 <Text style={styles.userStatus}>
                   ✅ Sesión activa con Google
                 </Text>
@@ -133,10 +86,7 @@ const GoogleLoginDebug = () => {
             </View>
 
             <View style={styles.actionsContainer}>
-              <TouchableOpacity
-                style={[styles.button, styles.logoutButton]}
-                onPress={handleLogout}
-              >
+              <TouchableOpacity style={[styles.button, styles.logoutButton]}>
                 <Text style={styles.buttonText}>Cerrar sesión</Text>
               </TouchableOpacity>
 
@@ -180,10 +130,6 @@ const GoogleLoginDebug = () => {
                   style={[styles.input, errors.password && styles.inputError]}
                   placeholder="••••••••"
                   value={password}
-                  onChangeText={(text) => {
-                    setPassword(text);
-                    if (errors.password) setErrors({ ...errors, password: "" });
-                  }}
                   secureTextEntry
                 />
                 {errors.password && (
@@ -199,7 +145,6 @@ const GoogleLoginDebug = () => {
 
               <TouchableOpacity
                 style={[styles.button, styles.primaryButton]}
-                onPress={handleSubmit}
                 activeOpacity={0.8}
               >
                 <Text style={styles.buttonText}>Iniciar sesión</Text>
@@ -220,8 +165,6 @@ const GoogleLoginDebug = () => {
                   styles.googleButton,
                   loading && styles.googleButtonDisabled,
                 ]}
-                onPress={handleLoginPress}
-                disabled={!request || loading}
                 activeOpacity={0.7}
               >
                 {loading ? (
@@ -238,12 +181,6 @@ const GoogleLoginDebug = () => {
                   </>
                 )}
               </TouchableOpacity>
-
-              {!request && (
-                <Text style={styles.configuringText}>
-                  Configurando autenticación...
-                </Text>
-              )}
             </View>
 
             {/* Enlace a registro */}

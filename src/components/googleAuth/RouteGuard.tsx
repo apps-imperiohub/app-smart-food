@@ -32,11 +32,11 @@ export const RouteGuard = ({
 
         if (!hasUser) {
           console.log("🔒 Usuario no autenticado, redirigiendo...");
-          router.replace(`/loging`);
+          router.replace(`/`);
         }
       } catch (error) {
         console.error("Error verificando auth:", error);
-        router.replace(`/loging`);
+        router.replace(`/`);
       } finally {
         setIsChecking(false);
       }
