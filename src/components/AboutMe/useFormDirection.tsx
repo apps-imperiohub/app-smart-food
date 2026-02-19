@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 interface Entrega {
-  id: number;
+  id: string;
   nombre: string;
   codigo: string;
   numero: string;
@@ -16,7 +16,7 @@ const useFormDirection = () => {
   // Estado para las direcciones
   const [entregaData, setEntregaData] = useState<Entrega[]>([
     {
-      id: 1,
+      id: "1",
       nombre: "Aldo",
       codigo: "+52",
       numero: "5512345678",
@@ -27,7 +27,7 @@ const useFormDirection = () => {
       numeroCasa: "1500",
     },
     {
-      id: 2,
+      id: "2",
       nombre: "Aldo (Casa)",
       codigo: "+52",
       numero: "4431234567",
@@ -38,7 +38,7 @@ const useFormDirection = () => {
       numeroCasa: "123",
     },
     {
-      id: 3,
+      id: "3",
       nombre: "Aldo (Trabajo)",
       codigo: "+52",
       numero: "4439876543",
