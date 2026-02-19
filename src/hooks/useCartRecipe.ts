@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert } from "react-native";
 import { FavoritesAPI } from "../services/favoritesAPI";
 import { MealAPI } from "../services/mealAPI";
@@ -15,23 +15,23 @@ export const useRecipeDetail = (recipeId: string) => {
     [key: number]: number;
   }>({});
 
-  const userId = "mock-user-123"; // Mock user para desarrollo
+  // userId constante con useMemo
+  const userId = useMemo(() => "mock-user-123", []);
 
+  // useEffect principal - carga los datos
   useEffect(() => {
-    const checkIfSaved = async () => {
-      try {
-        const isRecipeSaved = await FavoritesAPI.isFavorited(userId, recipeId);
-        setIsSaved(isRecipeSaved);
-      } catch (error) {
-        console.error("Error checking if recipe is saved:", error);
-      }
-    };
+    let isMounted = true;
 
-    const loadRecipeDetail = async () => {
-      setLoading(true);
+    const loadData = async () => {
+      if (!isMounted) return;
+
       try {
+        setLoading(true);
+
+        // 1. Cargar detalles de la receta
         const mealData = await MealAPI.getMealById(recipeId);
-        if (mealData) {
+
+        if (isMounted && mealData) {
           const transformedRecipe = MealAPI.transformMealData(mealData);
 
           if (transformedRecipe) {
@@ -39,39 +39,55 @@ export const useRecipeDetail = (recipeId: string) => {
               ...transformedRecipe,
               youtubeUrl: mealData.strYoutube || null,
             };
-
             setRecipe(recipeWithVideo);
+          }
+        }
+
+        // 2. Verificar si está guardado (solo si tenemos receta)
+        if (isMounted) {
+          try {
+            const isRecipeSaved = await FavoritesAPI.isFavorited(
+              userId,
+              recipeId,
+            );
+            setIsSaved(isRecipeSaved);
+          } catch (error) {
+            console.error("Error checking if recipe is saved:", error);
           }
         }
       } catch (error) {
         console.error("Error loading recipe detail:", error);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
-    checkIfSaved();
-    loadRecipeDetail();
-  }, [recipeId, userId]);
+    loadData();
 
-  const getYouTubeEmbedUrl = (url: string) => {
-    // example url: https://www.youtube.com/watch?v=mTvlmY4vCug
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
+  }, [recipeId, userId]); // userId es estable gracias a useMemo
+
+  // Funciones con useCallback para evitar recreaciones
+  const getYouTubeEmbedUrl = useCallback((url: string) => {
     const videoId = url.split("v=")[1];
     return `https://www.youtube.com/embed/${videoId}`;
-  };
+  }, []);
 
-  const handleToggleSave = async () => {
-    if (!recipe) return;
+  const handleToggleSave = useCallback(async () => {
+    if (!recipe || isSaving) return;
 
     setIsSaving(true);
 
     try {
       if (isSaved) {
-        // remove from favorites
         await FavoritesAPI.removeFavorite(userId, recipeId);
         setIsSaved(false);
       } else {
-        // add to favorites
         await FavoritesAPI.addFavorite({
           userId,
           recipeId: recipeId,
@@ -88,41 +104,17 @@ export const useRecipeDetail = (recipeId: string) => {
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [recipe, isSaved, isSaving, userId, recipeId]);
 
-  const handleGoBack = () => {
+  const handleGoBack = useCallback(() => {
     router.back();
-  };
+  }, [router]);
 
-  const size = [
-    {
-      text: "XS",
-      Value: 1,
-    },
-    {
-      text: "SM",
-      Value: 2,
-    },
-    {
-      text: "L",
-      Value: 3,
-    },
-    {
-      text: "XL",
-      Value: 4,
-    },
-    {
-      text: "XXL",
-      Value: 5,
-    },
-  ];
-  function textoANumerico(texto: string): number {
+  const textoANumerico = useCallback((texto: string): number => {
     const limpio = texto.replace(/[^\d.,]/g, "");
-
     let resultado = limpio;
 
     const puntoIndex = resultado.indexOf(".");
-
     if (puntoIndex !== -1 && puntoIndex < resultado.length - 1) {
       const antesPunto = resultado.substring(0, puntoIndex).replace(/\./g, "");
       const despuesPunto = resultado.substring(puntoIndex + 1);
@@ -134,16 +126,16 @@ export const useRecipeDetail = (recipeId: string) => {
 
     const numero = parseFloat(resultado);
     return isNaN(numero) ? 0 : numero;
-  }
-  const incrementIngredient = (index: number) => {
+  }, []);
+
+  const incrementIngredient = useCallback((index: number) => {
     setIngredientQuantities((prev) => ({
       ...prev,
       [index]: (prev[index] || 0) + 1,
     }));
-  };
+  }, []);
 
-  // Función para decrementar un ingrediente
-  const decrementIngredient = (index: number) => {
+  const decrementIngredient = useCallback((index: number) => {
     setIngredientQuantities((prev) => {
       const current = prev[index] || 0;
       if (current <= 0) return prev;
@@ -152,22 +144,36 @@ export const useRecipeDetail = (recipeId: string) => {
         [index]: current - 1,
       };
     });
-  };
+  }, []);
 
-  // Función para extraer cantidad y nombre del ingrediente
-  const parseIngredient = (ingredient: string) => {
-    // Ejemplo: "1 package Rice Noodles" → {quantity: "1 package", name: "Rice Noodles"}
+  const parseIngredient = useCallback((ingredient: string) => {
     const parts = ingredient.split(" ");
     if (parts.length >= 2 && /^\d+/.test(parts[0])) {
-      // Si el primer elemento es un número
       return {
         original: ingredient,
-        quantity: parts.slice(0, 2).join(" "), // Toma cantidad + unidad
+        quantity: parts.slice(0, 2).join(" "),
         name: parts.slice(2).join(" "),
       };
     }
     return { original: ingredient, quantity: "", name: ingredient };
-  };
+  }, []);
+
+  // Resetear cantidades cuando cambia la receta
+  useEffect(() => {
+    setIngredientQuantities({});
+  }, [recipeId]);
+
+  const size = useMemo(
+    () => [
+      { text: "XS", Value: 1 },
+      { text: "SM", Value: 2 },
+      { text: "L", Value: 3 },
+      { text: "XL", Value: 4 },
+      { text: "XXL", Value: 5 },
+    ],
+    [],
+  );
+
   return {
     textoANumerico,
     size,
