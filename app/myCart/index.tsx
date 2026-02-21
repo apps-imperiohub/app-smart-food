@@ -1,10 +1,14 @@
 import CartRecipe from "@/components/myCartComponents/CartRecipe";
 import RecipeHeader from "@/components/recipeOrder/recipeHeader";
 import { COLORS } from "@/constants/colors";
+import { useUser } from "@/context/UserContext";
+import { cartApi } from "@/services/api";
 import { favoritesStyles } from "@/styles/favorites.styles";
+import { Cart } from "@/types/cart";
 import { router } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,11 +18,28 @@ import {
 } from "react-native";
 
 const MyCartScreen = () => {
-  const list = ["52886", "52895", "52854"];
+  const [cart, setCart] = useState<Cart | null>(null);
   const [active, setActive] = useState(false);
   const [itemPrices, setItemPrices] = useState<{ [key: string]: number }>({});
   const [total, setTotal] = useState(0);
+  const { user, loading, error } = useUser();
+  const { getCart } = cartApi;
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        if (user?.id) {
+          // ← Verificar que user existe
+          const cartData = await getCart(user.id);
+          console.log("🛒 Carrito del usuario:", cartData);
+          setCart(cartData);
+        }
+      } catch (error) {
+        console.error("❌ Error al obtener el carrito:", error);
+      }
+    };
 
+    fetchCart();
+  }, [user?.id, getCart]); // ← Agregar dependencias
   // Calcular total de forma estable
   useEffect(() => {
     const prices = Object.values(itemPrices);
@@ -43,6 +64,9 @@ const MyCartScreen = () => {
     });
   }, []);
 
+  if (loading) return <ActivityIndicator />;
+  if (error) return <Text>Error: {error}</Text>;
+  if (!user) return <Text>No hay usuario</Text>;
   return (
     <View style={styles.container}>
       <ScrollView
@@ -52,13 +76,19 @@ const MyCartScreen = () => {
         <RecipeHeader title="My Cart" />
 
         <View style={styles.itemsContainer}>
-          {list.map((item, index) => (
-            <CartRecipe
-              key={`${item}-${index}`}
-              id={item}
-              onPriceChange={(price) => handlePriceChange(item, price)}
-            />
-          ))}
+          {cart?.items ? (
+            cart.items.map((item, index) => (
+              <CartRecipe
+                key={`${item}-${index}`}
+                cantidad={item.cantidad}
+                plato={item.plato} // Manejo de caso plato undefined
+              />
+            ))
+          ) : (
+            <Text style={{ textAlign: "center", marginTop: 20 }}>
+              Tu carrito está vacío
+            </Text>
+          )}
         </View>
 
         {/* Sección de descuento */}

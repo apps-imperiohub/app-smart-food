@@ -11,7 +11,7 @@ const ConfigurePanel = () => {
         <Text style={styles.titleDiv}>Socio HD</Text>
         <View style={styles.cardContainer}>
           {socioHd.map((item, index) => (
-            <Link key={index} style={styles.item} href={"/"}>
+            <Link key={index} style={styles.item} href={item.href || "/"}>
               <View style={styles.svgContainer}>{item.svg}</View>
               <Text style={styles.title}>{item.title}</Text>
             </Link>

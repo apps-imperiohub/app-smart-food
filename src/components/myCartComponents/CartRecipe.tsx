@@ -1,43 +1,43 @@
 import { COLORS } from "@/constants/colors";
-import { useRecipeDetail } from "@/hooks/useRecipeDetail";
 import { favoritesStyles } from "@/styles/favorites.styles";
-import type { RecipeCartProps } from "@/types/recipe";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Plato } from "@/types/cart";
+import { useCallback, useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
-interface CartRecipeProps extends RecipeCartProps {
-  onPriceChange?: (price: number) => void;
+interface CartRecipeProps {
+  cantidad: number;
+  plato: Plato;
 }
 
-const CartRecipe: React.FC<CartRecipeProps> = ({ id, onPriceChange }) => {
-  const [mounted, setMounted] = useState(1);
-  const { recipe, textoANumerico } = useRecipeDetail(id);
-  const lastPriceRef = useRef<number>(0); // ✅ CORRECTO - useRef
+const CartRecipe: React.FC<CartRecipeProps> = ({ cantidad, plato }) => {
+  const [mounted, setMounted] = useState(cantidad);
+  // const { recipe, textoANumerico } = useRecipeDetail(id);
+  // const lastPriceRef = useRef<number>(0); // ✅ CORRECTO - useRef
 
   // Manejar cambios en el precio
-  const updatePrice = useCallback(() => {
-    if (recipe?.price && onPriceChange) {
-      const itemPrice = textoANumerico(recipe.price) * mounted;
-      // Solo actualizar si el precio cambió significativamente
-      if (Math.abs(itemPrice - lastPriceRef.current) > 0.01) {
-        lastPriceRef.current = itemPrice; // Actualizar la referencia
-        onPriceChange(itemPrice);
-      }
-    }
-  }, [recipe?.price, mounted, textoANumerico, onPriceChange]);
+  // const updatePrice = useCallback(() => {
+  //   if (recipe?.price && onPriceChange) {
+  //     const itemPrice = textoANumerico(recipe.price) * mounted;
+  //     // Solo actualizar si el precio cambió significativamente
+  //     if (Math.abs(itemPrice - lastPriceRef.current) > 0.01) {
+  //       lastPriceRef.current = itemPrice; // Actualizar la referencia
+  //       onPriceChange(itemPrice);
+  //     }
+  //   }
+  // }, [recipe?.price, mounted, textoANumerico, onPriceChange]);
 
   // Actualizar precio cuando cambia mounted
-  useEffect(() => {
-    updatePrice();
-  }, [mounted, updatePrice]);
+  // useEffect(() => {
+  //   updatePrice();
+  // }, [mounted, updatePrice]);
 
-  // Actualizar precio cuando se carga la receta
-  useEffect(() => {
-    if (recipe?.price) {
-      updatePrice();
-    }
-  }, [recipe?.price, updatePrice]);
+  // // Actualizar precio cuando se carga la receta
+  // useEffect(() => {
+  //   if (recipe?.price) {
+  //     updatePrice();
+  //   }
+  // }, [recipe?.price, updatePrice]);
 
   const handleIncrement = useCallback(() => {
     setMounted((prev) => prev + 1);
@@ -47,35 +47,33 @@ const CartRecipe: React.FC<CartRecipeProps> = ({ id, onPriceChange }) => {
     setMounted((prev) => (prev > 0 ? prev - 1 : 0));
   }, []);
 
-  if (!recipe) {
-    return (
-      <View style={[style.container, { opacity: 0.7 }]}>
-        <Text>Cargando...</Text>
-      </View>
-    );
-  }
+  // if (!recipe) {
+  //   return (
+  //     <View style={[style.container, { opacity: 0.7 }]}>
+  //       <Text>Cargando...</Text>
+  //     </View>
+  //   );
+  // }
 
   return (
     <View style={style.container}>
       <View style={style.imageContainer}>
         <Image
-          source={{ uri: recipe.image }}
+          source={{ uri: plato.imagen || "https://via.placeholder.com/150" }}
           style={style.image}
           resizeMode="cover"
         />
       </View>
 
       <View style={style.contentContainer}>
-        <Text style={style.title}>{recipe.title}</Text>
+        <Text style={style.title}>{plato.nombre}</Text>
 
         <Text style={style.description} numberOfLines={3} ellipsizeMode="tail">
-          {recipe.description}
+          {/* {recipe.description} */}
         </Text>
 
         <View style={style.priceRow}>
-          <Text style={style.price}>
-            ${(textoANumerico(recipe.price || "0") * mounted).toFixed(2)}
-          </Text>
+          <Text style={style.price}>$</Text>
 
           <View style={style.quantityControls}>
             <TouchableOpacity

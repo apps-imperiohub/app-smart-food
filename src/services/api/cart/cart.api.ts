@@ -1,18 +1,17 @@
+import type { Cart } from "@/types/cart";
 import { apiClient } from "../client";
 import type {
-  Cart,
-  CartItemPlato,
-  CartItemBebida,
-  CartItemSalsa,
-  AddPlatoToCartDto,
-  UpdateCartItemDto,
   AddBebidaToCartDto,
-  UpdateCartBebidaDto,
+  AddPlatoToCartDto,
   AddSalsaToCartDto,
-  UpdateCartSalsaDto,
   ApiResponse,
+  CartItemBebida,
+  CartItemPlato,
+  CartItemSalsa,
+  UpdateCartBebidaDto,
+  UpdateCartItemDto,
+  UpdateCartSalsaDto,
 } from "./cart.types";
-
 export const cartApi = {
   /**
    * Obtener o crear el carrito del usuario actual

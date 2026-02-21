@@ -3,10 +3,10 @@ import { ActivityIndicator, Button, Text, View } from "react-native";
 
 function LoginScreen() {
   const { user, loading, error, refreshUser } = useUser();
-
   if (loading) return <ActivityIndicator />;
   if (error) return <Text>Error: {error}</Text>;
   if (!user) return <Text>No hay usuario</Text>;
+
   return (
     // <GoogleAuthScreen />
     <View>
