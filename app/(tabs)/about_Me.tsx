@@ -1,14 +1,19 @@
 import ConfigurePanel from "@/components/AboutMe/ConfigurePanel";
 import HeaderAboutMe from "@/components/AboutMe/headerPanel";
-import { ScrollView } from "react-native";
+import { useUser } from "@/context/UserContext";
+import { ActivityIndicator, ScrollView, Text } from "react-native";
 
 const AboutMeScreen = () => {
+  const { user, loading, error, refreshUser } = useUser();
+  if (loading) return <ActivityIndicator />;
+  if (error) return <Text>Error: {error}</Text>;
+  if (!user) return <Text>No hay usuario</Text>;
   return (
     <ScrollView>
       <HeaderAboutMe
-        nombre="Aldo"
-        gmail="Aldo@gmail.com"
-        img="https://avatars.githubusercontent.com/u/52204213?v=4"
+        nombre={user.nombre}
+        gmail={user.email}
+        img={user.picture}
         pais="Mexico"
       />
       <ConfigurePanel />
